@@ -10,7 +10,10 @@ workflows:
 
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.example.boogleHome
+        bundle_identifier: com.ariwan.booglehome
+
+      vars:
+        BUNDLE_ID: com.ariwan.booglehome
 
     integrations:
       app_store_connect: BoogleHomeKey
@@ -19,11 +22,19 @@ workflows:
       - name: Get Flutter dependencies
         script: flutter pub get
 
+      - name: Update iOS bundle identifier
+        script: |
+          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $BUNDLE_ID" ios/Runner/Info.plist
+
       - name: Configure iOS code signing
         script: xcode-project use-profiles
 
       - name: Build Boogle Home IPA
-        script: flutter build ipa --release --build-name=1.0.0 --build-number=$PROJECT_BUILD_NUMBER
+        script: |
+          flutter build ipa \
+            --release \
+            --build-name=1.0.0 \
+            --build-number=$PROJECT_BUILD_NUMBER
 
     artifacts:
       - build/ios/ipa/*.ipa
